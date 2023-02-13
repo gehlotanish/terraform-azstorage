@@ -4,4 +4,4 @@ updates:
   - package-ecosystem: "terraform"
     directory: "/"
     schedule:
-      interval: "hourly"
+      interval: "daily"
