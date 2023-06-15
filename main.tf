@@ -3,16 +3,16 @@ provider "azurerm" {
 }
 
 resource "azurerm_storage_account" "example" {
-  name                            = "stor${var.environment}${var.project-name}"
-  resource_group_name             = data.azurerm_resource_group.example.name
-  location                        = data.azurerm_resource_group.example.location
-  account_kind                    = var.account_kind
-  is_hns_enabled                  = var.data_lake_enabled
-  enable_https_traffic_only       = true
-  account_tier                    = var.access_tier
-  account_replication_type        = var.account_replication_type
-  access_tier                     = var.access_tier
-  min_tls_version                 = var.min_tls_version
+  name                      = "stor${var.environment}${var.project-name}"
+  resource_group_name       = data.azurerm_resource_group.example.name
+  location                  = data.azurerm_resource_group.example.location
+  account_kind              = var.account_kind
+  is_hns_enabled            = var.data_lake_enabled
+  enable_https_traffic_only = true
+  account_tier              = var.access_tier
+  account_replication_type  = var.account_replication_type
+  access_tier               = var.access_tier
+  min_tls_version           = var.min_tls_version
 
   dynamic "network_rules" {
     for_each = var.network_rules
