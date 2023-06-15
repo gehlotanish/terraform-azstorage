@@ -58,10 +58,6 @@ variable "data_lake_enabled" {
   default = false
 }
 
-variable "cmk_keyname" {
-  type = string
-}
-
 variable "extra_storage_tags" {
   type        = map(string)
   default     = {}

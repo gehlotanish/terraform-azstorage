@@ -103,14 +103,14 @@ resource "azurerm_monitor_diagnostic_setting" "example" {
   }
 }
 
-resource "azurerm_key_vault_access_policy" "example" {
+resource "azurerm_key_vault_access_policy" "storage" {
   count        = var.CMK_enabled ? 1 : 0
   key_vault_id = element(data.azurerm_key_vault.example.*.id, count.index)
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_storage_account.example.identity.0.principal_id
 
-  key_permissions    = ["get", "create", "list", "delete", "restore", "recover", "unwrapkey", "wrapkey", "purge", "encrypt", "decrypt", "sign", "verify"]
-  secret_permissions = ["get"]
+  key_permissions    = ["Get", "UnwrapKey", "WrapKey"]
+  secret_permissions = ["Get"]
 }
 
 resource "azurerm_key_vault_access_policy" "client" {
@@ -119,13 +119,34 @@ resource "azurerm_key_vault_access_policy" "client" {
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = data.azurerm_client_config.current.object_id
 
-  key_permissions    = ["get", "create", "delete", "list", "restore", "recover", "unwrapkey", "wrapkey", "purge", "encrypt", "decrypt", "sign", "verify"]
-  secret_permissions = ["get"]
+  key_permissions    = ["Get", "Create", "List", "Restore", "Recover", "UnwrapKey", "WrapKey", "Encrypt", "Decrypt", "Sign", "Verify"]
+  secret_permissions = ["Get"]
+}
+
+resource "azurerm_key_vault_key" "example" {
+  count        = var.CMK_enabled ? 1 : 0
+  name         = "${azurerm_storage_account.example.name}-CMK"
+  key_vault_id = element(data.azurerm_key_vault.example.*.id, count.index)
+  key_type     = "RSA"
+  key_size     = 2048
+  key_opts = [
+    "decrypt",
+    "encrypt",
+    "sign",
+    "unwrapKey",
+    "verify",
+    "wrapKey"
+  ]
+
+  depends_on = [
+    azurerm_key_vault_access_policy.client,
+    azurerm_key_vault_access_policy.storage
+  ]
 }
 
 resource "azurerm_storage_account_customer_managed_key" "example" {
   count              = var.CMK_enabled ? 1 : 0
   storage_account_id = azurerm_storage_account.example.id
   key_vault_id       = element(data.azurerm_key_vault.example.*.id, count.index)
-  key_name           = var.cmk_keyname
+  key_name           = azurerm_key_vault_key.example[count.index].name
 }
