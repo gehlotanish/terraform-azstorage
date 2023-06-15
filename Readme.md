@@ -18,6 +18,3 @@
 | medline_default_location | Specifies the location in the Azure environment. | `string` | `ussc` | yes |
 | extra_storage_tags | Additional tags to add in locals | `map(string)` | n/a | yes |
 
-## Note 
-
-* Before running storage workspaces, CMK key should be create it first in key vault with name CMK-${var.project-name}.
